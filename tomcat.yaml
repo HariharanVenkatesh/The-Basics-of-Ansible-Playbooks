@@ -1,0 +1,39 @@
+- hosts: tomcat
+  remote_user: ec2-user
+  become: yes
+  vars:
+    tomcat_port: 7788
+  tasks:  
+  - name: Upgrade all packages
+    ansible.builtin.yum:
+      name: '*'
+      state: latest
+  - name: Installing java 8
+    ansible.builtin.yum:
+      name: java-1.8.0-openjdk
+      state: present 
+  - name: Downloading tomcat
+    ansible.builtin.get_url: 
+      url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.80/bin/apache-tomcat-9.0.80.tar.gz
+      dest: /opt
+      mode: '777'
+  - name: Extract tar file
+    ansible.builtin.unarchive:
+      src: /opt/apache-tomcat-9.0.80.tar.gz
+      dest: /opt       
+      remote_src: yes
+      mode: '777'
+  - name: Template a file to /etc/file.conf
+    ansible.builtin.template:
+      src: /home/ec2-user/server.xml.j2
+      dest: /opt/apache-tomcat-9.0.80/conf/server.xml
+      mode: '777'
+  - name: Stoping tomcat
+    ansible.builtin.shell: nohup /opt/apache-tomcat-9.0.80/bin/shutdown.sh &    
+  - name: Starting tomcat
+    ansible.builtin.shell: nohup /opt/apache-tomcat-9.0.80/bin/startup.sh &      
+  - name: Copying files
+    copy:
+      src: /home/ec2-user/sample.war
+      dest: /opt/apache-tomcat-9.0.80/webapps
+      mode: '0777'  
