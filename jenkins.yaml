@@ -1,0 +1,34 @@
+- hosts: jenkins
+  remote_user: ec2-user
+  become: yes
+  vars:
+    ports: 8080
+  tasks: 
+  - name: Add repository jenkins
+    yum_repository:
+      name: jenkins
+      description: jen YUM repo
+      baseurl: http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+      gpgkey: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+  - name: Install the latest version of java & jenkins
+    ansible.builtin.yum:
+      name: "{{ item }}"
+      state: present
+    loop:
+       - java
+       - jenkins 
+  - name: changing jenkins port no
+    ansible.builtin.lineinfile:
+      path: /etc/sysconfig/jenkins 
+      regexp: '^JENKINS_PORT='
+      line: 'JENKINS_PORT="{{ ports }}"'
+    notify: restart jenkins
+  - name: Start service jenkins, if not started
+    service:
+      name: jenkins
+      state: started 
+  handlers:     
+  - name: restart jenkins
+    service:
+      name: jenkins
+      state: restarted 
