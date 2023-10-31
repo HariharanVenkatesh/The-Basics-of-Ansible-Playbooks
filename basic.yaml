@@ -1,0 +1,17 @@
+- hosts: all
+  remote_user: ec2-user
+  become: yes
+  tasks:
+  - name: Install the latest version of Apache
+    ansible.builtin.yum:
+      name: httpd
+      state: present
+  - name: Starting apache
+    service:
+      name: httpd
+      state: started 
+  - name: Copying files
+    copy:
+      src: /home/ec2-user/index.html
+      dest: /var/www/html/index.html
+      mode: '0777'
