@@ -1,0 +1,14 @@
+- hosts: localhost
+  remote_user: ec2-user
+  become: yes
+  tasks:
+    -name: creating Ec2
+     ec2:
+        key_name: Ansiblekey
+        instance_type: t2.micro
+        image: ami-05552d2dcf89c9b24
+        wait: yes
+        group: webserver
+        count: 1
+        vpc_subnet_id: subnet-05696fc547da839c3
+        assign_public_ip: yes 
