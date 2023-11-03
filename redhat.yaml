@@ -1,0 +1,148 @@
+---
+- name: Red Hat Installation
+ hosts: all
+ become: yes
+ gather_facts: no
+
+ tasks:
+ - name: Check if Red Hat installation media is mounted
+    ansible.builtin.mount:
+      path: /mnt/media
+      src: "{{ redhat_iso_url }}"
+      fstype: iso9660
+      state: mounted
+    register: redhat_media_mounted
+    when: "'{{ redhat_iso_url }}' is defined"
+
+ - name: Prepare the Red Hat installation media
+    ansible.builtin.command:
+      cmd: /usr/lib/redhat-media.sh /mnt/media
+    args:
+      creates: /etc/yum.repos.d/redhat-cdrom.repo
+    when: "'{{ redhat_iso_url }}' is defined and redhat_media_mounted.changed"
+
+ - name: Install Red Hat packages
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - kernel
+      - kernel-devel
+      - kernel-headers
+      - gcc
+      - gcc-c++
+      - redhat-lsb-core
+      - glibc
+      - glibc-common
+      - nss-tools
+      - openssl
+      - openssl-libs
+      - pam
+      - cpio
+      - rpm-build
+      - yum
+      - bash
+      - bzip2
+      - coreutils
+      - cracklib
+      - curl
+      - e2fsprogs
+      - expect
+      - findutils
+      - gawk
+      - gdbm
+      - gettext
+      - git
+      - gnupg2
+      - grep
+      - initscripts
+      - iproute
+      - iputils
+      - libtool
+      - libuser
+      - libuuid
+      - lsof
+      - man-db
+      - ncurses
+      - net-tools
+      - nmap-ncat
+      - patch
+      - procps-ng
+      - quota
+      - readline      - patch
+     
+      - - proc redhatps--ng
+release
+      -      - red quotahat-release
+     -e - readlineula
+     
+ - r      - redpm
+hat-      -release
+ rpm      --libs
+ redhat-      -release- reulapm-python
+      -
+      - rpm r
+pm-      - rpm-libs
+     sign - rpm
+      --python sed
+
+      -      - setup rpm
+      - shadow-sign
+     -utils - sed
+
+           - - sudo
+ setup
+           - - shadow sysstat
+-utils
+      -      system-config - sudo
+     -users - sysstatystem-release
+-package      - system
+      --config- tarusersystem-services
+      -
+      system-config - tracer-network-oute
+     tui
+ - unzip      -
+      - util-linux
+      system-config-kernel-tui - v
+     im- - system-config-enhanced
+lvm      - which
+-tui
+           - w - system-configget
+      - zip-kdump-t
+    when: "'ui
+      -{{ redhat_iso system-config-services-_url }}' istui
+      - defined"
+
+ - system-config name: C-kdump
+lean up Red Hat installation      - system- media
+    ansibleconfig-lvm
+     .builtin.mount: - system-
+config-kdump      path: /m-tui
+nt/media      -
+      state system-config-: unmountednetwork
+      -
+    system-config- when: "'{{ redfirewall-hat_isotui
+_url }}      - system-config-kdump' is defined-gui
+     "
+``` - system-config-
+
+Please makeservices
+      sure to replace - system-config `redhat_-iso_url`usersystem
+ with the actual      - system URL to your Red Hat-config-sel installation media.inux
+      You can define - system-config it in the-usersystem- `varsgui
+     ` section or pass - system- it using the `-econfig-sel` flag when runninginux-gui the playbook
+      - tar.
+      - tree
+      - unzip
+      - util-linux
+      - vim-enhanced
+      - wget
+      - which
+      - zip
+
+ - name: Clean up the Red Hat installation media
+    ansible.builtin.command:
+      cmd: umount /mnt/media
+    args:
+      creates: /etc/yum.repos.d/redhat-cdrom.repo
+    when: "'{{ redhat_iso_url }}' is defined and redhat_media_mounted.changed"
